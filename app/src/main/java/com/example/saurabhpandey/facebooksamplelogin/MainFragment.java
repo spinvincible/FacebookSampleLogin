@@ -2,7 +2,6 @@ package com.example.saurabhpandey.facebooksamplelogin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +17,6 @@ import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
-import java.util.PriorityQueue;
-
 
 /**
  * A placeholder fragment containing a simple view.
@@ -27,17 +24,13 @@ import java.util.PriorityQueue;
 public class MainFragment extends Fragment {
 
     private TextView profileSuccess;
-private CallbackManager callbackManager;
+    private CallbackManager callbackManager;
     private FacebookCallback<LoginResult> callback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
             AccessToken accessToken = loginResult.getAccessToken();
             Profile profile = Profile.getCurrentProfile();
-
-            if ( profile != null )
-            {
-                profileSuccess.setText("Welcome " + profile.getName());
-        }
+            displayWelcomeMessage(profile);
 
         }
 
@@ -46,11 +39,19 @@ private CallbackManager callbackManager;
 
         }
 
+        private void displayWelcomeMessage(Profile profile) {
+            if (profile != null) {
+                profileSuccess.setText("Welcome " + profile.getName());
+            }
+
+        }
+
         @Override
         public void onError(FacebookException e) {
 
         }
     };
+
     public MainFragment() {
     }
 
@@ -59,6 +60,8 @@ private CallbackManager callbackManager;
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
+
+
     }
 
     @Override
@@ -76,10 +79,22 @@ private CallbackManager callbackManager;
         loginButton.registerCallback(callbackManager, callback);
     }
 
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
 
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Profile profile = Profile.getCurrentProfile();
+        if (profile != null) {
+            profileSuccess.setText("Welcome " + profile.getName());
+        }
+    }
+
+
 }
